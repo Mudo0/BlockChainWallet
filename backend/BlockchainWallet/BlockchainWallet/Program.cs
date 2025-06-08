@@ -13,7 +13,8 @@ builder.Services.AddDbConfiguration(builder.Configuration)
     .AddDrivers(builder.Configuration);
 
 builder.Services.AddScoped<IDataAccess, DataAccess>();
-builder.Services.AddTransient<IRepository, Repository>();
+
+builder.Services.AddTransient<IRepository, RepositorioTest>();
 
 var app = builder.Build();
 

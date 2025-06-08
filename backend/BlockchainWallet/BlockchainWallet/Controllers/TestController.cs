@@ -1,4 +1,5 @@
 ﻿using BlockchainWallet.Config;
+using BlockchainWallet.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -6,24 +7,45 @@ namespace BlockchainWallet.Controllers
 {
     public class TestController : Controller
     {
-        private readonly Neo4jSettings _neo4jSettings;
+        private readonly IRepository repository;
+        private readonly ILogger<TestController> _logger;
 
-        public TestController(IOptions<Neo4jSettings> neo4JOptions)
+        public TestController(IRepository repository, ILogger<TestController> ilogger)
         {
-            _neo4jSettings = neo4JOptions.Value;
+            this.repository = repository;
+            _logger = ilogger;
         }
 
-        [HttpGet("/test")]
-        public IActionResult Index()
+        [HttpPost("/test/{name}&{age}")]
+        public async Task<IActionResult> Create(string name, int age)
         {
-            // Aquí puedes usar _neo4jSettings para acceder a la configuración de Neo4j
-            return Ok(new
+            try
             {
-                Connection = _neo4jSettings.Neo4jConnection,
-                User = _neo4jSettings.Neo4jUser,
-                Password = _neo4jSettings.Neo4jPassword,
-                Database = _neo4jSettings.Neo4jDatabase
-            });
+                if (string.IsNullOrEmpty(name))
+                {
+                    return BadRequest("No puede estar vacio el nombre");
+                }
+                return Ok(await repository.AddPerson(name, age));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "EndpointError");
+                throw;
+            }
+        }
+
+        [HttpGet("/test/{name}")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            try
+            {
+                return Ok(await repository.SearchPersonsByName(name));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "EndpointError");
+                throw;
+            }
         }
     }
 }
