@@ -1,6 +1,6 @@
 ﻿using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace BlockchainWallet.Repositories
+namespace BlockchainWallet.DataAccess
 {
     /// <summary>
     /// Interface for data access operations.
@@ -14,8 +14,8 @@ namespace BlockchainWallet.Repositories
         /// <param name="returnObjectKey"> Prop to be extracted from the specified node </param>
         /// <param name="parameters"> Optional parameters </param>
         /// <returns>
-        /// An asynchronous <see cref="System.Threading.Tasks.Task"/> that, upon completion,
-        /// contains a <see cref="System.Collections.Generic.List{T}"/> of <see cref="string"/>.
+        /// An asynchronous <see cref="Task"/> that, upon completion,
+        /// contains a <see cref="List{T}"/> of <see cref="string"/>.
         /// Each string in the list represents a scalar value extracted from the Cypher query result.
         /// </returns>
         Task<List<string>> ExecuteReadListAsync(string query, string returnObjectKey,
@@ -28,8 +28,8 @@ namespace BlockchainWallet.Repositories
         /// <param name="returnObjectKey"> Property to filter or group the results </param>
         /// <param name="parameters"> Optional parameters </param>
         /// <returns>
-        /// An asynchronous <see cref="System.Threading.Tasks.Task"/> that, upon completion,
-        /// contains a <see cref="System.Collections.Generic.List{T}"/> of <see cref="System.Collections.Generic.Dictionary{TKey,TValue}"/>.
+        /// An asynchronous <see cref="Task"/> that, upon completion,
+        /// contains a <see cref="List{T}"/> of <see cref="Dictionary{TKey,TValue}"/>.
         /// Each dictionary in the list represents a record or node/relationship, with keys being property names
         /// and values being the corresponding data.
         /// </returns>
@@ -44,7 +44,7 @@ namespace BlockchainWallet.Repositories
         /// <param name="query"> Cypher query </param>
         /// <param name="parameters"> Optional parameters</param>
         /// <returns>
-        /// An asynchronous <see cref="System.Threading.Tasks.Task"/> that, upon completion,
+        /// An asynchronous <see cref="Task"/> that, upon completion,
         /// contains a scalar value of type <typeparamref name="T"/>.
         /// </returns>
 
@@ -57,7 +57,7 @@ namespace BlockchainWallet.Repositories
         /// <param name="query"></param>
         /// <param name="parameters"></param>
         /// <returns>
-        /// An asynchronous <see cref="System.Threading.Tasks.Task"/> that, upon completion,
+        /// An asynchronous <see cref="Task"/> that, upon completion,
         /// contains a value of type <typeparamref name="T"/>, representing the result of the transaction.
         /// </returns>
 

@@ -1,8 +1,9 @@
 ﻿using BlockchainWallet.Config;
+using BlockchainWallet.DataAccess;
 using Microsoft.Extensions.Options;
 using Neo4j.Driver;
 
-namespace BlockchainWallet.Repositories
+namespace BlockchainWallet.Persistence
 {
     /// <summary>
     /// This class manages the sessions and transactions with the Neo4j database.
@@ -28,6 +29,7 @@ namespace BlockchainWallet.Repositories
         /// </summary>
         public async ValueTask DisposeAsync()
         {
+            _logger.LogInformation("Closing Database Session");
             await _session.CloseAsync();
         }
 
@@ -72,18 +74,18 @@ namespace BlockchainWallet.Repositories
                 //2. ejecución de la consulta
                 // se llama a la sesion creada por el driver para realizar una lectura/escritura
                 // el driver maneja automaticamente la creacion, el commit o el rollback de las transacciones
-                _logger.LogDebug("Executing ReadAsync");
+                _logger.LogInformation("Executing ReadAsync");
                 var result = await _session.ExecuteReadAsync(
                     async tx => // async tx => representa la sesion activa
                 {//3.Lógica que se ejecuta dentro de la transacción
                     // crea la variable scalar para almacenar el resultado
                     //del tipo T especificado por el método y la inicia
-                    T scalar = default(T);
+                    T scalar = default;
 
                     //4. se ejecuta la query Cypher
                     //los parameters son para evitar inyeccion
                     //devuelve un IResultCursor que contiene los resultados
-                    _logger.LogDebug("Executing Transaction");
+                    _logger.LogInformation("Executing Transaction");
                     var res = await tx.RunAsync(query, parameters);
 
                     //5. se obtiene el primer resultado de la consulta
@@ -111,15 +113,15 @@ namespace BlockchainWallet.Repositories
             try
             {
                 parameters = parameters == null ? new Dictionary<string, object>() : parameters;
-                _logger.LogDebug("Executing WriteAsync");
+                _logger.LogInformation("Executing WriteAsync");
                 var result = await _session.ExecuteWriteAsync(async tx =>
                 {
-                    T scalar = default(T);
-                    
-                    _logger.LogDebug("Executing Transaction");
+                    T scalar = default;
+
+                    _logger.LogInformation("Executing Transaction");
                     var res = await tx.RunAsync(query, parameters);
-                    
-                    _logger.LogDebug("Fetching records");
+
+                    _logger.LogInformation("Fetching records");
                     scalar = (await res.SingleAsync())[0].As<T>();
                     return scalar;
                 });
@@ -141,15 +143,15 @@ namespace BlockchainWallet.Repositories
             try
             {
                 parameters = parameters == null ? new Dictionary<string, object>() : parameters;
-                    _logger.LogDebug("Executing ReadAsync");
+                _logger.LogInformation("Executing ReadAsync");
                 var result = await _session.ExecuteReadAsync(async tx =>
                 {
                     var data = new List<T>();
-                    _logger.LogDebug("Executing Transaction");
+                    _logger.LogInformation("Executing Transaction");
                     var res = await tx.RunAsync(query, parameters);
                     //ahora el resultado puede ser multiple
                     //guardamos el resultado en una lista de registros
-                    _logger.LogDebug("Fetching records");
+                    _logger.LogInformation("Fetching records");
                     var records = await res.ToListAsync();
                     // Select() itera sobre cada registro
                     // x => es un registro y x.Values tiene un diccionario donde las claves
@@ -158,6 +160,8 @@ namespace BlockchainWallet.Repositories
                     //accediendo solo a esa clave
                     data = records.Select(x => (T)x.Values[returnObjectKey]).ToList();
                     //por ultimo lo convertimos en tipo T y luego convertimos todos los registros a una lista
+
+                    _logger.LogInformation("Returning data: {data}", data);
                     return data;
                 });
                 return result;

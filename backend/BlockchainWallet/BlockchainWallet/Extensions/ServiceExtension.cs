@@ -29,7 +29,7 @@ namespace BlockchainWallet.Extensions
             //bindea los valores del appsettings.json a la clase Neo4jSettings
             //1. registra la clase indicada como un objeto IOptions dentro de la colección de servicios
             services.Configure<Neo4jSettings>(configuration.GetSection("Neo4jSettings"));
-
+            services.AddDrivers(configuration);
             //2. devuelve la colección de servicios para
             //encadenar llamadas
             return services;

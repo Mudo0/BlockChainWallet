@@ -1,4 +1,6 @@
+using BlockchainWallet.DataAccess;
 using BlockchainWallet.Extensions;
+using BlockchainWallet.Persistence;
 using BlockchainWallet.Repositories;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 
@@ -9,12 +11,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //llama al método de extensión para configurar la conexión a Neo4j
-builder.Services.AddDbConfiguration(builder.Configuration)
-    .AddDrivers(builder.Configuration);
+builder.Services.AddDbConfiguration(builder.Configuration);
 
 builder.Services.AddScoped<IDataAccess, DataAccess>();
-
-builder.Services.AddTransient<IRepository, RepositorioTest>();
+builder.Services.AddTransient<BlockRepository>();
 
 var app = builder.Build();
 
