@@ -1,0 +1,389 @@
+============================================================================
+// MODELO DE DATOS DE GRAFOS PARA BITCOIN - NEO4J
+// ============================================================================
+
+// ============================================================================
+// 1. CREACIÓN DE CONSTRAINTS E ÍNDICES
+// ============================================================================
+
+// Constraints para garantizar unicidad
+CREATE CONSTRAINT block_hash_unique IF NOT EXISTS FOR (b:block) REQUIRE b.hash IS UNIQUE;
+CREATE CONSTRAINT tx_txid_unique IF NOT EXISTS FOR (t:tx) REQUIRE t.txid IS UNIQUE;
+CREATE CONSTRAINT address_address_unique IF NOT EXISTS FOR (a:address) REQUIRE a.address IS UNIQUE;
+
+// Índices para mejorar rendimiento
+CREATE INDEX block_timestamp IF NOT EXISTS FOR (b:block) ON (b.timestamp);
+CREATE INDEX tx_size IF NOT EXISTS FOR (t:tx) ON (t.size);
+CREATE INDEX output_value IF NOT EXISTS FOR (o:output) ON (o.value);
+
+// ============================================================================
+// 2. CREACIÓN DE NODOS - BLOQUES (Genesis hasta Bloque 4)
+// ============================================================================
+
+// Bloque Genesis (Bloque 0)
+CREATE (:block {
+    hash: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f',
+    size: 285,
+    prevblock: null,
+    merkleroot: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
+    timestamp: 1231006505,
+    bits: '1d00ffff',
+    nonce: 2083236893,
+    txcount: 1,
+    version: 1
+});
+
+// Bloque 1
+CREATE (:block {
+    hash: '00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048',
+    size: 215,
+    prevblock: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f',
+    merkleroot: '0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098',
+    timestamp: 1231469665,
+    bits: '1d00ffff',
+    nonce: 2573394689,
+    txcount: 1,
+    version: 1
+});
+
+// Bloque 2
+CREATE (:block {
+    hash: '000000006a625f06636b8bb6ac7b960a8d03705d1ace08b1a19da3fdcc99ddbd',
+    size: 490,
+    prevblock: '00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048',
+    merkleroot: '9b0fc92260312ce44e74ef369f5c66bbb85848f2eddd5a7a1cde251e54ccfdd5',
+    timestamp: 1231469744,
+    bits: '1d00ffff',
+    nonce: 1639830024,
+    txcount: 2,
+    version: 1
+});
+
+// Bloque 3
+CREATE (:block {
+    hash: '0000000082b5015589a3fdf2d4baff403e6f0be035a5d9742c1cae6295464449',
+    size: 275,
+    prevblock: '000000006a625f06636b8bb6ac7b960a8d03705d1ace08b1a19da3fdcc99ddbd',
+    merkleroot: 'f3e94742aca4b5ef85488dc37c06c3282295ffec960994b2c0d5ac2a25a95766',
+    timestamp: 1231470173,
+    bits: '1d00ffff',
+    nonce: 2011431709,
+    txcount: 1,
+    version: 1
+});
+
+// Bloque 4
+CREATE (:block {
+    hash: '000000004ebadb55ee9096c9a2f8880e09da59c0d68b1c228da88e48844a1485',
+    size: 348,
+    prevblock: '0000000082b5015589a3fdf2d4baff403e6f0be035a5d9742c1cae6295464449',
+    merkleroot: 'e86c79b1ba92a888c53f9e20b04f4e4bf1097c44bf49e74fd21d7f8b61b4f421',
+    timestamp: 1231470988,
+    bits: '1d00ffff',
+    nonce: 2086697007,
+    txcount: 2,
+    version: 1
+});
+
+// ============================================================================
+// 3. CREACIÓN DE NODOS - DIRECCIONES
+// ============================================================================
+
+CREATE (:address {address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'});
+CREATE (:address {address: '12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX'});
+CREATE (:address {address: '1HLoD9E4SDFFPDiYs6L6d2MHNh9nCJeGi4'});
+CREATE (:address {address: '1BNwxHGaFbeUBitpjy2AsKpJ29Ybxntqvb'});
+CREATE (:address {address: '1JfbZRwdDHKZmuiZgYArJZhcuuzuw2HuMu'});
+CREATE (:address {address: '1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA'});
+CREATE (:address {address: '16UwLL9Risc3QfPqBUvKofHmBQ7wMp26WP'});
+CREATE (:address {address: '1CUTxxQnSqoCPJJJ7KaKKfyTpe4TfUzTj1'});
+CREATE (:address {address: '19FgFQGZy47NcGTJ4hfNdGMwS8EATkUtu5'});
+CREATE (:address {address: '1MxTkeEP2PmHSMze5tUZ1hAV3YTKu2Gh1N'});
+
+// ============================================================================
+// 4. CREACIÓN DE NODOS - TRANSACCIONES
+// ============================================================================
+
+// Transacciones Coinbase (una por bloque)
+CREATE (:tx {
+    txid: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
+    version: 1,
+    locktime: 0,
+    size: 204,
+    weight: 816,
+    segwit: false
+});
+
+CREATE (:tx {
+    txid: '0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098',
+    version: 1,
+    locktime: 0,
+    size: 134,
+    weight: 536,
+    segwit: false
+});
+
+CREATE (:tx {
+    txid: '9b0fc92260312ce44e74ef369f5c66bbb85848f2eddd5a7a1cde251e54ccfdd5',
+    version: 1,
+    locktime: 0,
+    size: 134,
+    weight: 536,
+    segwit: false
+});
+
+CREATE (:tx {
+    txid: 'f3e94742aca4b5ef85488dc37c06c3282295ffec960994b2c0d5ac2a25a95766',
+    version: 1,
+    locktime: 0,
+    size: 134,
+    weight: 536,
+    segwit: false
+});
+
+CREATE (:tx {
+    txid: 'e86c79b1ba92a888c53f9e20b04f4e4bf1097c44bf49e74fd21d7f8b61b4f421',
+    version: 1,
+    locktime: 0,
+    size: 134,
+    weight: 536,
+    segwit: false
+});
+
+// Transacciones regulares
+CREATE (:tx {
+    txid: 'a16f3ce4dd5deb92d98ef5cf8afeaf0775ebca408f708b2146c4fb42b41e14be',
+    version: 1,
+    locktime: 0,
+    size: 258,
+    weight: 1032,
+    segwit: false
+});
+
+CREATE (:tx {
+    txid: 'b1fea52486ce0c62bb442b530a3f0132b826c74e473d1f2c220bfa78111c5082',
+    version: 1,
+    locktime: 0,
+    size: 275,
+    weight: 1100,
+    segwit: false
+});
+
+CREATE (:tx {
+    txid: 'c997a5e56e104102fa209c6a852dd90660a20b2d9c352423edce25857fcd3704',
+    version: 1,
+    locktime: 0,
+    size: 134,
+    weight: 536,
+    segwit: false
+});
+
+// ============================================================================
+// 5. CREACIÓN DE NODOS - OUTPUTS
+// ============================================================================
+
+// Outputs Coinbase
+CREATE (:coinbase:output {
+    index: 0,
+    value: 5000000000,
+    scriptPubKey: '41047211a824f55b505228e4c3d5194c1fcfaa15a456abdf37f9b9d97a4040afc073dee6c89064984f03385237d92167c13e236446b417ab79a0fcae412ae3316b77ac',
+    addresses: ['1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa']
+});
+
+CREATE (:coinbase:output {
+    index: 0,
+    value: 5000000000,
+    scriptPubKey: '4104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac',
+    addresses: ['12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX']
+});
+
+CREATE (:coinbase:output {
+    index: 0,
+    value: 5000000000,
+    scriptPubKey: '410494b9d3e76c5b1629ecf97fff95d7a4bbdac87cc26099ada28066c6ff1eb9191223cd897194a08d0c2726c5747f1db49e8cf90e75dc3e3550ae9b30076f9e1d36ac',
+    addresses: ['1HLoD9E4SDFFPDiYs6L6d2MHNh9nCJeGi4']
+});
+
+CREATE (:coinbase:output {
+    index: 0,
+    value: 5000000000,
+    scriptPubKey: '4104184f32b212815c6e522e66686324030ff7a4c0654e80d88f24b36a180ee69b9141943c78e05dd6c99b1ae9a9f57ef6ccbadcc2ad81c41e9d4b7ecd4e3f21c93ac',
+    addresses: ['1BNwxHGaFbeUBitpjy2AsKpJ29Ybxntqvb']
+});
+
+CREATE (:coinbase:output {
+    index: 0,
+    value: 5000000000,
+    scriptPubKey: '41041e1e83f1a9c2638e5e5aa8b8d71b8a1ba6c8e2e2d3f3a2a3b3c5d5e5f6g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5',
+    addresses: ['1JfbZRwdDHKZmuiZgYArJZhcuuzuw2HuMu']
+});
+
+// Outputs regulares
+CREATE (:output {
+    index: 0,
+    value: 2500000000,
+    scriptPubKey: '76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2615ae88ac',
+    addresses: ['1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA']
+});
+
+CREATE (:output {
+    index: 1,
+    value: 2490000000,
+    scriptPubKey: '76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2615ae88ac',
+    addresses: ['16UwLL9Risc3QfPqBUvKofHmBQ7wMp26WP']
+});
+
+CREATE (:output {
+    index: 0,
+    value: 3000000000,
+    scriptPubKey: '76a914c825a1ecf2a6830c4401620c3a16f1995057c2abae88ac',
+    addresses: ['1CUTxxQnSqoCPJJJ7KaKKfyTpe4TfUzTj1']
+});
+
+CREATE (:output {
+    index: 1,
+    value: 1990000000,
+    scriptPubKey: '76a914f15d1921f52e4ee8c88e9a1b0a3fae6e9e5f7f2a8ac',
+    addresses: ['19FgFQGZy47NcGTJ4hfNdGMwS8EATkUtu5']
+});
+
+CREATE (:output {
+    index: 0,
+    value: 1000000000,
+    scriptPubKey: '76a914e3821c6e8b5d2a9f7b8c1d3e5f7a9b2c4d6e8f0ac',
+    addresses: ['1MxTkeEP2PmHSMze5tUZ1hAV3YTKu2Gh1N']
+});
+
+// ============================================================================
+// 6. CREACIÓN DE RELACIONES
+// ============================================================================
+
+// Relaciones [:chain] - Conectar bloques en cadena
+MATCH (b0:block {hash: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f'})
+MATCH (b1:block {hash: '00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048'})
+CREATE (b1)-[:chain]->(b0);
+
+MATCH (b1:block {hash: '00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048'})
+MATCH (b2:block {hash: '000000006a625f06636b8bb6ac7b960a8d03705d1ace08b1a19da3fdcc99ddbd'})
+CREATE (b2)-[:chain]->(b1);
+
+MATCH (b2:block {hash: '000000006a625f06636b8bb6ac7b960a8d03705d1ace08b1a19da3fdcc99ddbd'})
+MATCH (b3:block {hash: '0000000082b5015589a3fdf2d4baff403e6f0be035a5d9742c1cae6295464449'})
+CREATE (b3)-[:chain]->(b2);
+
+MATCH (b3:block {hash: '0000000082b5015589a3fdf2d4baff403e6f0be035a5d9742c1cae6295464449'})
+MATCH (b4:block {hash: '000000004ebadb55ee9096c9a2f8880e09da59c0d68b1c228da88e48844a1485'})
+CREATE (b4)-[:chain]->(b3);
+
+// Relaciones [:inc] - Transacciones incluidas en bloques
+MATCH (b:block {hash: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f'})
+MATCH (t:tx {txid: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b'})
+CREATE (b)-[:inc]->(t);
+
+MATCH (b:block {hash: '00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048'})
+MATCH (t:tx {txid: '0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098'})
+CREATE (b)-[:inc]->(t);
+
+MATCH (b:block {hash: '000000006a625f06636b8bb6ac7b960a8d03705d1ace08b1a19da3fdcc99ddbd'})
+MATCH (t1:tx {txid: '9b0fc92260312ce44e74ef369f5c66bbb85848f2eddd5a7a1cde251e54ccfdd5'})
+MATCH (t2:tx {txid: 'a16f3ce4dd5deb92d98ef5cf8afeaf0775ebca408f708b2146c4fb42b41e14be'})
+CREATE (b)-[:inc]->(t1), (b)-[:inc]->(t2);
+
+MATCH (b:block {hash: '0000000082b5015589a3fdf2d4baff403e6f0be035a5d9742c1cae6295464449'})
+MATCH (t:tx {txid: 'f3e94742aca4b5ef85488dc37c06c3282295ffec960994b2c0d5ac2a25a95766'})
+CREATE (b)-[:inc]->(t);
+
+MATCH (b:block {hash: '000000004ebadb55ee9096c9a2f8880e09da59c0d68b1c228da88e48844a1485'})
+MATCH (t1:tx {txid: 'e86c79b1ba92a888c53f9e20b04f4e4bf1097c44bf49e74fd21d7f8b61b4f421'})
+MATCH (t2:tx {txid: 'b1fea52486ce0c62bb442b530a3f0132b826c74e473d1f2c220bfa78111c5082'})
+CREATE (b)-[:inc]->(t1), (b)-[:inc]->(t2);
+
+// Relaciones [:coinbase] - Bloques a sus outputs coinbase
+MATCH (b:block {hash: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f'})
+MATCH (c:coinbase {addresses: ['1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa']})
+CREATE (b)-[:coinbase]->(c);
+
+MATCH (b:block {hash: '00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048'})
+MATCH (c:coinbase {addresses: ['12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX']})
+CREATE (b)-[:coinbase]->(c);
+
+MATCH (b:block {hash: '000000006a625f06636b8bb6ac7b960a8d03705d1ace08b1a19da3fdcc99ddbd'})
+MATCH (c:coinbase {addresses: ['1HLoD9E4SDFFPDiYs6L6d2MHNh9nCJeGi4']})
+CREATE (b)-[:coinbase]->(c);
+
+MATCH (b:block {hash: '0000000082b5015589a3fdf2d4baff403e6f0be035a5d9742c1cae6295464449'})
+MATCH (c:coinbase {addresses: ['1BNwxHGaFbeUBitpjy2AsKpJ29Ybxntqvb']})
+CREATE (b)-[:coinbase]->(c);
+
+MATCH (b:block {hash: '000000004ebadb55ee9096c9a2f8880e09da59c0d68b1c228da88e48844a1485'})
+MATCH (c:coinbase {addresses: ['1JfbZRwdDHKZmuiZgYArJZhcuuzuw2HuMu']})
+CREATE (b)-[:coinbase]->(c);
+
+// Relaciones [:out] - Transacciones crean outputs
+MATCH (t:tx {txid: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b'})
+MATCH (o:coinbase {addresses: ['1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa']})
+CREATE (t)-[:out]->(o);
+
+MATCH (t:tx {txid: '0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098'})
+MATCH (o:coinbase {addresses: ['12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX']})
+CREATE (t)-[:out]->(o);
+
+MATCH (t:tx {txid: 'a16f3ce4dd5deb92d98ef5cf8afeaf0775ebca408f708b2146c4fb42b41e14be'})
+MATCH (o1:output {addresses: ['1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA']})
+MATCH (o2:output {addresses: ['16UwLL9Risc3QfPqBUvKofHmBQ7wMp26WP']})
+CREATE (t)-[:out]->(o1), (t)-[:out]->(o2);
+
+MATCH (t:tx {txid: 'b1fea52486ce0c62bb442b530a3f0132b826c74e473d1f2c220bfa78111c5082'})
+MATCH (o1:output {addresses: ['1CUTxxQnSqoCPJJJ7KaKKfyTpe4TfUzTj1']})
+MATCH (o2:output {addresses: ['19FgFQGZy47NcGTJ4hfNdGMwS8EATkUtu5']})
+CREATE (t)-[:out]->(o1), (t)-[:out]->(o2);
+
+// Relaciones [:in] - Outputs gastados como inputs
+MATCH (o:coinbase {addresses: ['12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX']})
+MATCH (t:tx {txid: 'a16f3ce4dd5deb92d98ef5cf8afeaf0775ebca408f708b2146c4fb42b41e14be'})
+CREATE (o)-[:in {vin: 0, scriptSig: '473044022074c3b2ccffaecd5f9a07e48e28b8a85b82b8d7b5b7b7b7b7b7b7b7b7b7b7b7ac', sequence: 4294967295, witness: null}]->(t);
+
+MATCH (o:output {addresses: ['1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA']})
+MATCH (t:tx {txid: 'b1fea52486ce0c62bb442b530a3f0132b826c74e473d1f2c220bfa78111c5082'})
+CREATE (o)-[:in {vin: 0, scriptSig: '473044022050c3a2bbffaecd5f9a07e48e28b8a85b82b8d7b5b7b7b7b7b7b7b7b7b7b7b7ac', sequence: 4294967295, witness: null}]->(t);
+
+// Relaciones [:locked] - Outputs bloqueados a direcciones
+MATCH (o:coinbase {addresses: ['1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa']})
+MATCH (a:address {address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:coinbase {addresses: ['12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX']})
+MATCH (a:address {address: '12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:coinbase {addresses: ['1HLoD9E4SDFFPDiYs6L6d2MHNh9nCJeGi4']})
+MATCH (a:address {address: '1HLoD9E4SDFFPDiYs6L6d2MHNh9nCJeGi4'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:coinbase {addresses: ['1BNwxHGaFbeUBitpjy2AsKpJ29Ybxntqvb']})
+MATCH (a:address {address: '1BNwxHGaFbeUBitpjy2AsKpJ29Ybxntqvb'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:coinbase {addresses: ['1JfbZRwdDHKZmuiZgYArJZhcuuzuw2HuMu']})
+MATCH (a:address {address: '1JfbZRwdDHKZmuiZgYArJZhcuuzuw2HuMu'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:output {addresses: ['1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA']})
+MATCH (a:address {address: '1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:output {addresses: ['16UwLL9Risc3QfPqBUvKofHmBQ7wMp26WP']})
+MATCH (a:address {address: '16UwLL9Risc3QfPqBUvKofHmBQ7wMp26WP'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:output {addresses: ['1CUTxxQnSqoCPJJJ7KaKKfyTpe4TfUzTj1']})
+MATCH (a:address {address: '1CUTxxQnSqoCPJJJ7KaKKfyTpe4TfUzTL1'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:output {addresses: ['19FgFQGZy47NcGTJ4hfNdGMwS8EATkUtu5']})
+MATCH (a:address {address: '19FgFQGZy47NcGTJ4hfNdGMwS8EATkUtu5'})
+CREATE (o)-[:locked]->(a);
+
+MATCH (o:output {addresses: ['1MxTkeEP2PmHSMze5tUZ1hAV3YTKu2Gh1N']})
+MATCH (a:address {address: '1MxTkeEP2PmHSMze5tUZ1hAV3YTKu2Gh1N'})
+CREATE (o)-[:locked]->(a);
